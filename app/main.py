@@ -9,6 +9,8 @@ from fastapi.responses import FileResponse
 import csv
 import os
 
+from fastapi import FastAPI, Depends, UploadFile, File
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -91,3 +93,26 @@ def export_logs_csv(db: Session = Depends(get_db)):
         media_type="text/csv",
         filename="logs_export.csv"
     )
+
+
+@app.post("/upload-log")
+async def upload_log_file(
+    file: UploadFile = File(...),
+    db: Session = Depends(get_db)
+):
+    contents = await file.read()
+    lines = contents.decode("utf-8").splitlines()
+
+    imported_count = 0
+
+    for line in lines:
+        if line.strip():  # leere Zeilen ignorieren
+            parsed_entry = parser.parse_line(line)
+            crud.create_log_entry(db, parsed_entry)
+            imported_count += 1
+
+    return {
+        "message": "Log file uploaded successfully",
+        "filename": file.filename,
+        "imported_lines": imported_count
+    }
