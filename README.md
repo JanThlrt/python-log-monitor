@@ -57,7 +57,7 @@ python-log-monitor
 Clone the repository:  
 
 
-git clone https://github.com/YOUR_USERNAME/python-log-monitor.git  
+git clone https://github.com/JanThlrt/python-log-monitor.git  
 cd python-log-monitor  
   
 
