@@ -5,6 +5,10 @@ from app.database import SessionLocal, engine, Base
 from app import crud, parser
 import app.models
 
+from fastapi.responses import FileResponse
+import csv
+import os
+
 Base.metadata.create_all(bind=engine)
 
 app = FastAPI()
@@ -64,3 +68,26 @@ def slow_request_stats(db: Session = Depends(get_db)):
 def top_errors(db: Session = Depends(get_db)):
     errors = crud.get_top_errors(db)
     return {message: count for message, count in errors}
+
+
+@app.get("/export/csv")
+def export_logs_csv(db: Session = Depends(get_db)):
+    logs = crud.get_log_entries(db)
+
+    export_folder = "exports"
+    os.makedirs(export_folder, exist_ok=True)
+
+    file_path = os.path.join(export_folder, "logs_export.csv")
+
+    with open(file_path, mode="w", newline="", encoding="utf-8") as file:
+        writer = csv.writer(file)
+        writer.writerow(["id", "level", "message", "response_time"])
+
+        for log in logs:
+            writer.writerow([log.id, log.level, log.message, log.response_time])
+
+    return FileResponse(
+        path=file_path,
+        media_type="text/csv",
+        filename="logs_export.csv"
+    )

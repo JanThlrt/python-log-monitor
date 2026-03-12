@@ -1,0 +1,9 @@
+id,level,message,response_time
+1,INFO,Request completed in 120ms,120
+2,INFO,Request completed in 95ms,95
+3,WARNING,Request completed in 410ms,410
+4,ERROR,Database connection failed,
+5,ERROR,Database connection failed,
+6,ERROR,Timeout while calling API,
+7,INFO,Request completed in 280ms,280
+8,WARNING,Request completed in 350ms,350
